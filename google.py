@@ -1,26 +1,28 @@
-import pickle # for token storage
-import os # for file operations
-import base64 # for encoding
-from dataclasses import dataclass, field # for dataclass
-from email.mime.base import MIMEBase # for attachments
-from email.mime.multipart import MIMEMultipart # for email structure
-from email.mime.text import MIMEText # for email structure
-from email import encoders # for encoding attachments
-from google_auth_oauthlib.flow import InstalledAppFlow # for authentication
-from googleapiclient.discovery import build # for API service
-from google.auth.transport.requests import Request # for token refresh
-import re # for email validation with regex
-import logging # for logging
-
+import pickle
+import os
+import base64 #
+from dataclasses import dataclass, field
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email import encoders
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+import re
+import logging
+logging.basicConfig(level=logging.INFO)
 
 class EmailBuilder:
+    LOGGER = logging.getLogger('EmailBuilder')
     def __init__(self):
         self.email = Email()
 
     def to(self, recipient: str):
         """Sets the recipient of the email."""
         if not Email.validate_address(recipient):
-            raise ValueError('Invalid email address')
+            EmailBuilder.error('Invalid email address')
+            return self
         self.email.to = recipient
         return self
 
@@ -91,7 +93,7 @@ class Email:
 
 
 class GmailService:
-    logging.basicConfig(level=logging.INFO)
+
     CLIENT_SECRET_FILE = 'secrets.json'
     API_NAME = 'gmail'
     API_VERSION = 'v1'
